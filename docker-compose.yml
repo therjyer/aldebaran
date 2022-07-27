@@ -1,0 +1,51 @@
+version: '3.4'
+
+services:
+
+  browser:
+    image: browserless/chrome:latest
+    hostname: browser
+    init: true
+    volumes:
+      - "sessions:/sessions"
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    environment:
+      CONNECTION_TIMEOUT: -1
+      KEEP_ALIVE: 'true'
+      WORKSPACE_EXPIRE_DAYS: 1
+      ENABLE_CORS: 'true'
+      CHROME_REFRESH_TIME: 86400000
+      DEFAULT_BLOCK_ADS: 'true'
+      FUNCTION_ENABLE_INCOGNITO_MODE: 'true'
+      ENABLE_XVBF: 'true'
+      CHROME_PATH: '/usr/bin/brave-browser'
+      NODE_ENV: 'production'
+
+  whatsappbot:
+    image: devmarinho1/bot_wpp
+    hostname: bot
+    init: true
+    restart: on-failure
+    volumes:
+      - "sessions:/sessions"
+    depends_on:
+      - browser
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      WA_BROWSER_WS_ENDPOINT: 'ws://browser:3000'
+      WA_DISABLE_SPINS: 'true'
+    ports:
+      - 3031:3031
+  
+volumes:
+  sessions:
