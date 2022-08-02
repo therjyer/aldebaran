@@ -8,13 +8,9 @@ node_modules
 # end managed
 # arquivos de log
 logs
-#arquivos mp3
-media/*.mp3
-media/to/*.mp3
 
 # managed
 **_IGNORE_**
 # end managed
 
 .env
-media
